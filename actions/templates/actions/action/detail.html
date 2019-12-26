@@ -1,0 +1,38 @@
+{% with user=action.user profile=action.user.Profile %}
+<p style="color : red;">{{Profile.image}}</p>
+<div class="action">
+	<div class="images">
+		{% if profile.image %}
+				{{user.username}}
+				<a href="/user/{{user.username}}">
+					<img src="{{ profile.image.url }}" style = "height:25px; width : 50px;" alt="{{ user.username }}" class="item-img">
+				</a>
+		{% endif %}
+
+		{% if action.target %}
+			{% with target=action.target %}
+				{% if target.image %}
+						<a href="{{ target.get_absolute_url }}">
+							<img src="{{ profile.image.url }}" class="item-img">
+						</a>
+				{% endif %}
+				{% endwith %}
+		{% endif %}
+	</div>
+	<div class="info">
+		<p>
+			<span class="date">{{ action.created|timesince }} ago</span>
+			<br />
+			<a href="/user/{{ user.username }}" style="color : red">
+				{{ user.username }}
+			</a>
+			{{ action.verb }}
+			{% if action.target %}
+				{% with target=action.target %}
+					<a href="{% url 'post'%}" style="color : red">{{ target }}</a>
+			{% endwith %}
+			{% endif %}
+		</p>
+	</div>
+</div>
+{% endwith %}
