@@ -1,0 +1,40 @@
+{% extends "account/base.html" %}
+{% block extra_head%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+{% endblock%}
+{% block content %}<!---->
+{% if len1 != 0 %}
+<h2>Number of following</h2>
+<p>{{len1}}</p>
+{% else %}
+{% endif %}
+<h1>Hello my friend</h1>
+{% if q %}
+{% for key, value in q.items%}
+    <dt>{{ key }}</dt>
+    <img src="{{value}}" alt="">
+{% endfor %}
+{% else %}
+<p>No one is following you. Want to follow</p>
+<a href="{% url 'search' %}"><button type="search" name="button">Click Me</button></a>
+{% endif %}
+<hr>
+<hr>
+<h2>Number of followers</h2>
+{% if len2 %}
+<p>{{len2}}</p>
+{% else %}
+<p>No one is following you </p>
+{% endif %}
+<h1>Hello my friend</h1>
+{% if e %}
+{% for key, value in e.items%}
+    <p><a href="/user/{{key}}" style = "color : blue">{{ key }}</a></p>
+    <img src="{{value}}" alt="">
+{% endfor %}
+{% else %}
+<p>No one is following you </p>
+{% endif %}
+{%endblock%}

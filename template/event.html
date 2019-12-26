@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block content %}
+{% load cust_filters%}
+{% load crispy_forms_tags %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+  <div class="form-group col-md-8 mb-0">
+    {{ form.title|as_crispy_field }}
+  </div>
+  <div class="form-group col-md-4 mb-0">
+    {{ form.file|as_crispy_field }}
+  </div>
+  <div class="form-group col-md-5 mb-10">
+    {{ form.description|as_crispy_field }}
+  </div>
+</div>
+    <button type="submit">Upload</button>
+  </form>
+<br><br>
+  <p><a style = "color : red;" href="{% url 'home' %}">Return to home</a></p>
+
+{% with events=request.user|event %}
+{% for event in events %}
+<p>{{event.user}}</p>
+<img src="{{event.file.url}}" style = "height:100px;width:100px;" alt="">
+<p>{{event.description}}</p>
+{% with total_likes=event.users_like.count users_like=event.users_like.all%}
+<div class="image-info">
+  <div>
+    <span class="count" id = "count{{event.id}}">
+      <span class = "total" id = "total{{event.id}}">{{ total_likes }} </span>
+       like{{ total_likes|pluralize }}
+    </span>
+  </div>
+  <a href="{%url 'eventlike' %}" style = "color : red" data-id="{{ event.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="eventlike" id="{{event.id}}">
+    {% if request.user not in users_like %}
+    Like
+    {% else %}
+    Unlike
+    {% endif %}
+  </a>
+</div>
+{% endwith %}
+{% endfor%}
+{% endwith %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js"></script>
+<script>
+    var csrftoken = $.cookie('csrftoken');
+    function csrfSafeMethod(method) {
+      // these HTTP methods do not require CSRF protection
+      return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    }
+    $.ajaxSetup({
+      beforeSend: function(xhr, settings) {
+        if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+          xhr.setRequestHeader("X-CSRFToken", csrftoken);
+        }
+      }
+    });
+    $(document).ready(function(){
+      $('a.eventlike').click(function(e){
+        var app = $(this).data("action")
+        var app_id = $(this).data("id")
+        console.log(app);
+       e.preventDefault();
+       $.post('{% url "eventlike" %}',
+           {
+               id: $(this).data('id'),
+               action: $(this).data('action')
+
+           },
+
+           function(data){
+
+               if (data['status'] == 'ok')
+               {
+
+                   var previous_action = app;
+                   var ni = app_id
+                   // toggle data-action
+                   $('a#'+ni).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                   // toggle link text
+                   $('a#'+ni).text(previous_action == 'like' ? 'Unlike' : 'Like');
+
+                   // update total likes
+                   var previous_likes = parseInt($('span#count' + ni +' #total'+ni).text());
+
+                   $('span#count' + ni +' #total'+ni).text(previous_action == 'like' ? parseInt(previous_likes + 1) : parseInt(previous_likes - 1));
+               }
+
+       });
+
+   });});
+</script>
+{% endblock %}

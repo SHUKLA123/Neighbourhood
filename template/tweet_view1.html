@@ -1,0 +1,318 @@
+{% extends 'base.html' %}
+  {% block extra_head %}
+    <style>
+      img{
+        height:100px;
+        width:200px;
+      }
+    </style>
+  {% endblock %}
+  {% block content %}
+  {% load cust_filters %}
+    {% if l%}
+      {%for i in l %}
+        <h2>{{i.user}}</h2>
+        <p>{{i.title}}</p>
+        {% with images=i.id|image_s %}
+        {% if images %}
+        {% for image in images %}
+        <img src="{{image.file.url}}" style = "" alt="Not found">
+        {% endfor %}
+        {% else %}
+        <p>Image Not found</p>
+        {% endif %}
+        {% endwith %}
+        <p>{{i.description}}</p>
+        <p>{{i.created}}</p>
+
+
+        <!--comment-->
+
+
+
+        {% with total_likes=i.users_like.count users_like=i.users_like.all%}
+          <div class="image-info">
+            <div>
+              <span class="count" id = "count{{i.id}}">
+                <span class = "total" id = "total{{i.id}}">{{ total_likes }} </span>
+                 like{{ total_likes|pluralize }}
+              </span>
+            </div>
+
+              <a href="{%url 'like' %}" style = "color : red" data-id="{{ i.id }}" data-action="{% if request.user in users_like %}un{% endif %}like" class="like" id="{{i.id}}">
+              {% if request.user not in users_like %}
+                Like
+              {% else %}
+                Unlike
+              {% endif %}
+            </a>
+          </div>
+        {% endwith %}
+
+        <p>Comments : </p>
+        {% with comment_all=i.id|extract %}
+
+
+   <!-- comment form -->
+
+     <form class="ajax-form" action="" method="post" data-id="{{ i.id }}">{% csrf_token %}
+       <textarea name="name" rows="3" cols="40" class = "text-area{{i.id}}"></textarea>
+       <button type="submit" name="button" class = "button" style = "height:30px; width : 90px;">comment</button>
+     </form>
+
+   <!-- comment display -->
+        <div class="tweet{{i.id}}">
+
+
+              {% if comment_all%}
+              {% for comment_ex in comment_all %}
+              <p class="col-comment" style="background-color:red;">{{comment_ex.content}}</p>
+              <p class = "user-name">{{comment_ex.user}}</p>
+
+
+    <!-- reply display -->
+            <div class="tweet{{comment_ex.id}}">
+              {% for reply_view in comment_ex.replies_user_model.all  %}
+
+                    replys
+                    <p class="col-reply">{{reply_view.content}}</p>
+                    <p class = "user-reply">{{reply_view.user}}</p>
+              </div>
+              {% endfor %}
+
+    <!-- reply form -->
+
+    <form class="reply-form" action="" method="post" data-id="{{ comment_ex.id }}" data-tweet_id="{{ i.id }}">{% csrf_token %}
+      <p style = "color:green">Reply</p>
+      <textarea name="name" rows="3" cols="40" class = "text-area{{comment_ex.id}}"></textarea>
+      <button type="submit" name="button" class = "button" style = "height:30px; width : 70px;">Submit</button>
+    </form>
+  </div>
+
+
+
+
+              {% endfor%}
+              {% endif%}
+        {% endwith%}
+
+
+
+
+
+
+      {% endfor %}
+
+      {% else%}
+      <br><br><br><br>
+      <p>Please follow anyone for post</p>
+
+
+  {% endif %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+    <script src="http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js"></script>
+    <script>
+    		var csrftoken = $.cookie('csrftoken');
+    		function csrfSafeMethod(method) {
+    			// these HTTP methods do not require CSRF protection
+    			return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    		}
+    		$.ajaxSetup({
+    			beforeSend: function(xhr, settings) {
+    				if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+    					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    				}
+    			}
+    		});
+    		$(document).ready(function(){
+          $('a.like').click(function(e){
+            var app = $(this).data("action")
+            var app_id = $(this).data("id")
+            console.log(app);
+           e.preventDefault();
+           $.post('{% url "like" %}',
+               {
+                   id: $(this).data('id'),
+                   action: $(this).data('action')
+
+               },
+
+               function(data){
+
+                   if (data['status'] == 'ok')
+                   {
+
+                       var previous_action = app;
+                       var ni = app_id
+                       console.log(previous_action)
+                       console.log(ni)
+                       // toggle data-action
+                       $('a#'+ni).data('action', previous_action == 'like' ? 'unlike' : 'like');
+                       // toggle link text
+                       $('a#'+ni).text(previous_action == 'like' ? 'Unlike' : 'Like');
+
+                       // update total likes
+                       var previous_likes = parseInt($('span#count' + ni +' #total'+ni).text());
+                       console.log(previous_likes);
+                       $('span#count' + ni +' #total'+ni).text(previous_action == 'like' ? parseInt(previous_likes + 1) : parseInt(previous_likes - 1));
+                   }
+
+           });
+
+       });
+
+//comment-ajax
+
+       $('form.ajax-form').submit(function(e){
+        e.preventDefault();
+        var tweet_id_yuhi = $(this).data('id');
+        $.post('{% url "comment" %}',
+            {
+                id: $(this).data('id'),
+                comment: $('textarea.text-area'+tweet_id_yuhi).val()
+
+            },
+
+            function(data){
+                user_data = data.user_n
+                if (user_data)
+                {
+
+                        $(".tweet"+user_data.tweet_id).prepend(`
+
+                                  <p class=".col-comment">${user_data.content}</p>
+                                  <p class="user-name">${user_data.user_dn}</p>
+                                  <div class="tweet${user_data.id}">
+
+                                          <p class="col-reply"></p>
+                                          <p class = "user-reply"></p>
+                                    </div>
+
+                                  <form class="reply-form" action="" method="post" data-id="${user_data.id}" data-tweet_id="${user_data.tweet_id}">{% csrf_token %}
+                                    <p style = "color:green">Reply</p>
+
+                                    <textarea name="name" rows="3" cols="40" class = "text-area${user_data.id}"></textarea>
+                                    <button type="submit" name="button" class = "button" style = "height:30px; width : 70px;">Submit</button>
+                                  </form>
+
+
+                          `);
+
+
+
+                  }$('form.reply-form').submit(function(e){
+                   e.preventDefault();
+
+                     console.log("I am working");
+                   var comment_id_yuhi = $(this).data('id');
+                   var tweet_use_id = $(this).data('tweet_id');
+                   $.post('{% url "reply" %}',
+                       {
+
+                           id: $(this).data('id'),
+                           tweet_id:$(this).data('tweet_id'),
+                           reply: $('textarea.text-area'+comment_id_yuhi).val()
+                         },
+                         function add(data){
+                           console.log("a");
+                             user_data = data.user_n
+                             console.log(user_data.comment_use_id);
+                             if (user_data)
+                             {console.log("i");
+                                     $(".tweet"+user_data.comment_use_id).append(`
+
+                                           <div class = ".row-reply">
+
+                                               <p class=".col-reply">${user_data.content}</p>
+                                               <p class="user-name-reply">${user_data.user_dn}</p>
+
+                                            </div>
+
+                                       `);
+                                       console.log("bdhb");
+
+                               }
+
+                     });
+                     $('form.reply-form').trigger("reset");
+                     return false;
+                     console.log("empty");
+                  });
+
+
+
+        });
+
+        $('form.ajax-form').trigger("reset");
+        return false;
+     });
+
+    		});
+
+
+
+
+
+//reply
+
+// $(document).on('click', '.reply-btn', function(e){
+// 		e.preventDefault();
+// 		// Get the comment id from the reply button's data-id attribute
+// 		var comment_id = $(this).data('id');
+// 		// show/hide the appropriate reply form (from the reply-btn (this), go to the parent element (comment-details)
+// 		// and then its siblings which is a form element with id comment_reply_form_ + comment_id)
+// 		$(this).parent().siblings('form#comment_reply_form_' + comment_id).toggle(500);
+// 		$(document).on('click', '.submit', function(e){
+// 			e.preventDefault();
+
+
+
+
+
+
+
+        $('form.reply-form').submit(function(e){
+         e.preventDefault();
+
+           console.log("I am working");
+         var comment_id_yuhi = $(this).data('id');
+         var tweet_use_id = $(this).data('tweet_id');
+         $.post('{% url "reply" %}',
+             {
+
+                 id: $(this).data('id'),
+                 tweet_id:$(this).data('tweet_id'),
+                 reply: $('textarea.text-area'+comment_id_yuhi).val()
+
+             },
+
+             function add(data){
+                 user_data = data.user_n
+                 console.log(user_data.comment_use_id);
+                 if (user_data)
+                 {
+                         $(".tweet"+user_data.comment_use_id).append(`
+
+                               <div class = ".row-reply">
+                                   <p class=".col-reply">${user_data.content}</p>
+                                   <p class="user-name-reply">${user_data.user_dn}</p>
+                                </div>
+
+                           `);
+                           console.log("bdhb");
+
+                   }
+
+         });
+         $('form.reply-form').trigger("reset");
+         return false;
+         console.log("empty");
+      });
+
+// $(document).on('click', '.button', function(e){
+//   e.preventDefault();
+// });
+
+    	 </script>
+
+  {% endblock %}

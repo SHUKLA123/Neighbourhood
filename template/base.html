@@ -1,0 +1,199 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width = device-width,initial-scale =1.0">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+    <meta id="viewport" name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1, viewport-fit=cover">
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <!-- Latest compiled and minified CSS -->
+    <title>{% block head_title %}{% endblock %}</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <style>
+
+    nav{
+      background-color: #6dba83;
+      font-size: 20px;
+      height: 65px;
+      background-size: cover;
+    }
+
+    a{
+       color : white;
+    }
+
+    a:hover{
+      color : white;
+    }
+    .avatar {
+        vertical-align: middle;
+        width: 50px;
+        height: 50px;
+        border-radius: 70%;
+      }
+      @import "compass/css3";
+
+      $body-bg: #444;
+      $icon-back-color: #444;
+      $icon-front-color: #fff;
+      $icon-front-bg: #ac00ff;
+      $combo-size: 1.6em;
+      $icon-size-sm: 1.1em;
+      $icon-size-md: 2.2em;
+      $icon-size-lg: 3.3em;
+
+
+      html, body {
+          height: 100%;
+      }
+
+      .stack-container {
+        text-align: center;
+        font-size: $icon-size-md;
+        padding: 10px;
+      }
+      .stack-container-2x {
+        font-size: $icon-size-lg;
+        text-align: center;
+      }
+      .stack-container-1x {
+        text-align: center;
+        font-size: 1em;
+      }
+      .fa-combo {
+        white-space: nowrap;
+        width: $combo-size*1.5;
+        height: $combo-size;
+        color: $icon-back-color;
+        position: relative;
+        display: inline-block;
+        .fas {
+      /*     -webkit-font-smoothing: antialiased; */
+          font-size: 1em;
+          $square-size: 1.5em;
+          height: $square-size;
+      /*     width: $square-size; */
+          line-height: $square-size - 0.1em;
+
+          text-align: center;
+        }
+
+      :last-child {
+          $square-size: 1.7em;
+          height: $square-size;
+          width: $square-size;
+          line-height: $square-size;
+
+          background-color: $icon-front-bg;
+          background-image: linear-gradient(rgba(#fff, 0.3), rgba(#000, 0.1));
+          color: $icon-front-color;
+
+          text-align: center;
+          border-radius: 50%;
+          font-size: 0.6em;
+          margin-left: -0.8em;
+      /*    bottom: 0;
+          right: 0;*/
+      /*     position: absolute; */
+        }
+      }
+    </style>
+    {% block extra_head %}
+    {% endblock %}
+  </head>
+  <body>
+<nav>
+      {% if user.is_authenticated %}
+
+
+
+      <ul class="nav justify-content-end">
+
+
+        <!-- <li class="nav-item">
+            <a class="nav-link" href="{% url 'search' %}">Search</a>
+        </li> -->
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="{% url 'home' %}">Profile</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+        </li> -->
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="{% url 'people' %}">People</a>
+        </li> -->
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'event' %}">Event</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'post' %}"><div class="stack-container-2x"><div class="fa-combo"><i class="fas fa-book"></i><i class="fas fa-photo-video"></i></div></div></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'tweet' %}"><div class="fa-combo">
+    <i class="fas fa-camera"></i>
+    <i class="fas fa-pen"></i>
+  </div></a>
+        </li>
+        <!-- <li class="nav-item">
+          <a class="nav-link" href="{% url 'nearby' %}">Near Me</a>
+        </li> -->
+
+        {% if e1%}
+        <p>{{e1.user}}</p>
+        {% if  request.user in e1.user%}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'buss' %}">buss</a>
+        </li>
+        {% else %}
+        {% endif%}
+        {% endif %}
+        {% block nav_content%}
+        {% endblock %}
+        <li class="nav-item dropdown" data-toggle="dropdown">
+
+        <a class="nav-link text-light  dropdown-toggle" href="#"><img src="{{user.Profile.image.url}}" alt="Avatar" class="avatar"></a>
+
+        <div class="dropdown-menu dropdown-menu-right">
+
+        <a class="dropdown-item" href="{% url 'people' %}">people</a>
+
+        <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
+        <a class="dropdown-item" href="{% url 'home' %}">Profile</a>
+        <a class="dropdown-item" href="{% url 'nearby' %}">Near Me</a>
+
+
+        </div>
+
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href=""></a>
+        </li>
+
+        {% else %}
+
+      </ul>
+        <ul class="nav justify-content-end" >
+
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">Sign In</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">Sign Up</a>
+        </li>
+      {% endif %}
+    </ul>
+</nav>
+<!-- here massage
+
+<p>written in user.py in name a</p>
+-->
+<!-- -->
+    {% block content%}
+    {% endblock %}
+    {% block extra_body %}
+    {% endblock %}
+  </body>
+</html>

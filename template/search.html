@@ -1,0 +1,102 @@
+{% extends 'base.html'%}
+{% load staticfiles %}
+{% block extra_head %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+<style>
+  body{
+    padding : 0px;
+    margin : 0px;
+
+  }
+  .container{
+    margin : 0px;
+    padding : 0px;
+  }
+  .customDiv{
+    min-height : 300px;
+    text-align : center;
+    font-size : large;
+  }
+  a{
+     color : white;
+  }
+
+  a:hover{
+    color : white;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<br><br><br>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-2">
+      <div class="customDiv">
+        <img src="{% static "image/a.jpg" %}" style = "height : 100px; width : 100px;"  alt="">
+      </div>
+    </div>
+    <div class="col-lg-8">
+      <div class="customDiv">
+        <form class="" action="/search/" method="post">
+          {% csrf_token %}
+          <div class="input-group">
+            <div class="input-group-prepend">
+              <button class="btn btn-outline-secondary" type="button">Search</button>
+            </div>
+            <input type="text" name = "srh" class="form-control" placeholder="enter the username or address" aria-label="Not Found" aria-describedby="basic-addon1">
+          </div>
+        </form>
+        <br><br><br><br>
+        <!-- Showing Result -->
+        <div class = "row">
+          {% if messages %}
+            <ul class="messages">
+              {% for k in messages %}
+                <li style="color : 'red'">{{k}}</li>
+              {% endfor %}
+            </ul>
+          {%endif%}
+        </div><br>
+        <div class="" style="color : blue;">
+
+            <table>
+              <tr>
+                  {% if sr %}
+                <td>{{sr}}</td>{% endif %}
+                {% if b %}
+                <br><br><br>
+              <td><img src= "{{b}}" alt="Image Not Found"></td>
+              <td><a href="/user/{{sr}}"><button type="submit" name="button">View Profile</button></a></td>
+              {% endif %}
+              {% if z %}
+            <td>{{z}}</td>{% endif %}
+              </tr>
+              {% if l %}
+              {% if s %}
+              {% if k %}
+              {% for i in l%}
+              <tr>
+                <td>{{i}}</td>
+                <td>{{s}}</td>
+                <td><img src= "{{k}}" alt="Image Not Found"></td>
+                <td><a href="/user/{{i}}"><button type="submit" name="button">View Profile</button></a></td>
+              </tr>
+              {% endfor %}
+              {% endif%}
+              {% endif%}
+              {% endif%}
+            </table>
+        </div>
+</div>
+    </div>
+    <div class="col-lg-2">
+      <div class="customDiv">
+        <img src="{% static "image/a.jpg" %}" style = "height : 100px; width : 300px;" alt="">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

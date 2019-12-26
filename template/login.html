@@ -1,0 +1,54 @@
+{% extends "account/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+{% block extra_head%}
+
+<link href="https://fonts.googleapis.com/css?family=Lobster&display=swap" rel="stylesheet">
+<style>
+  h1{
+    font-family: 'Lobster', cursive;
+  }
+input{
+  align : center;
+}
+body{
+  background-color : #f2f2f2;
+}
+</style>
+{%endblock%}
+{% block content %}
+
+ <div class="container ml-100 ">
+   <br><br><br>
+   <center><h1>Meet Your Neighbour</h1>
+    <div class="col-sm-10 col-sm-offset-6">
+<br>
+<center><p>If you didn't have account? Then you have to <a href="{%url 'register'%}" style = "color : blue;">Sign Up</a>.</p></center><br>
+  <div class="row justify-content-center ">
+
+    <div class="col-6">
+
+      <form class="signup" method="post">
+
+        {% csrf_token %}
+
+        {% load crispy_forms_tags %}
+    {{ form.username|as_crispy_field }}
+    {{ form.password|as_crispy_field }}
+
+    <br>
+    <a class="button secondaryAction" href="{% url 'account_reset_password' %}" style = "color : black;">{% trans "Forgot Password?" %}</a><br><br>
+        <center><button class = "btn btn-primary" type="submit">{% trans "Sign In" %} &raquo;</button></center>
+      </form><br></center>
+      <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAi83jo9vcFYXBZDQNZc1s5r4O9I3FQhEA&callback=initMap"
+  type="text/javascript"></script>
+
+      {% endblock %}
+    </div>
+  </div>
+  </div>
+
+</div>
+</div>

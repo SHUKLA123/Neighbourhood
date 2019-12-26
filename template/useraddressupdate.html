@@ -1,0 +1,16 @@
+{% extends "account/base.html" %}
+{% block content %}<!---->
+  {% load crispy_forms_tags %}
+<div class="container">
+
+  {% if a_form.instance.pk %}
+  <h1 class="text-center">Update your address here <strong>{{user.username|title}}</strong></h1>
+  {% endif %}
+  <form class="addressupdate" action="{% url 'address_update' %}" method="POST" id="addressupdate_form">
+    {% csrf_token %}
+    {{ a_form|crispy }}
+    <input type="submit" class='btn btn-primary' value="Update">
+  </form>
+</div>
+
+{% endblock %}

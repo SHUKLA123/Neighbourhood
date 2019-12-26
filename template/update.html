@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+    <form method="post">
+      {% csrf_token %}
+      <input type="text" name="house" value="{{a_form.house}}"><p></p>
+      <input type="text" name="house" value="{{a_form.street}}"><p></p>
+      <input type="text" name="house" value="{{a_form.area}}"><p></p>
+      <input type="text" name="house" value="{{a_form.pincode}}"><p></p>
+      <input type="text" name="house" value="{{a_form.district}}"><p></p>
+      <input type="text" name="house" value="{{a_form.state}}"><p></p>
+      <button type="submit" name="button" value="Update Record">a</button>
+    </form>
+  </body>
+</html>

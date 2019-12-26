@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+  <title></title>
+  </head>
+  <body>
+    {%if user%}
+    {%if users%}
+    {%if imag%}
+    {%if add%}
+    {%if gender_real%}
+    <p>{{users}}</p>
+    <p>{{add}}</p>
+    <p>{{age}}</p>
+    <p>dob : {{dob}}</p>
+    <img src="{{imag}}" alt="">
+    <p>Gender : {{gender_real}}</p>
+    {%endif%}
+    {%endif%}
+    {%endif%}
+    {%endif%}
+    {%endif%}
+<br><br><br>
+{% with total_followers=user.user_followers.count %}
+  <span class="count">
+  <span class="total">{{ total_followers }}</span>
+  follower{{ total_followers|pluralize }}
+  </span>
+{% if request.user != user%}
+  <a href="#" data-id="{{ user.id }}" data-action="{% if request.user in user.user_followers.all %}un{% endif %}follow" class="follow button">
+  {% if request.user not in user.user_followers.all %}
+    Follow
+  {% else %}
+    Unfollow
+  {% endif %}
+  </a>
+{%else%}
+  <p>You cannot follow yourself !!!</p>
+{% endif %}
+{% endwith %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+<script src=" http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js "></script>
+<script>
+var csrftoken = $.cookie('csrftoken');
+      function csrfSafeMethod(method) {
+          // these HTTP methods do not require CSRF protection
+          return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+      }
+      $.ajaxSetup({
+          beforeSend: function(xhr, settings) {
+              if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                  xhr.setRequestHeader("X-CSRFToken", csrftoken);
+              }
+          }
+      });
+      $(document).ready(function(){
+        $('a.follow').click(function(e){
+      e.preventDefault();
+      $.post('{% url "user_follow" %}',
+          {
+              id: $(this).data('id'),
+              action: $(this).data('action')
+          },
+          function(data){
+              if (data['status'] == 'ok')
+              {
+                  var previous_action = $('a.follow').data('action');
+
+                  // toggle data-action
+                  $('a.follow').data('action', previous_action == 'follow' ? 'unfollow' : 'follow');
+                  // toggle link text
+                  $('a.follow').text(previous_action == 'follow' ? 'Unfollow' : 'Follow');
+
+                  // update total followers
+                  var previous_followers = parseInt($('span.count .total').text());
+                  $('span.count .total').text(previous_action == 'follow' ? previous_followers + 1 : previous_followers - 1);
+              }
+      });
+  });
+  });
+ </script>
+
+ {% if len1 != 0 %}
+ <h2>Number of following</h2>
+ <p>{{len1}}</p>
+ {% else %}
+ {% endif %}
+ <h1>Hello my friend</h1>
+ {% if q %}
+ {% for key, value in q.items%}
+     <a href="/user/{{key}}" style = "color : blue">{{ key }}</a>
+     <img src="{{value}}" alt="">
+ {% endfor %}
+ {% else %}
+ <p>No one is following him. Want to follow</p>
+ {% endif %}
+ <hr>
+ <hr>
+ <h2>Number of followers</h2>
+ {% if len2 %}
+ <p>{{len2}}</p>
+ {% else %}
+ <p>No one is following you </p>
+ {% endif %}
+ <h1>Hello my friend</h1>
+ {% if e %}
+ {% for key, value in e.items%}
+     <p><a href="/user/{{key}}" style = "color : blue">{{ key }}</a></p>
+     <img src="{{value}}" alt="">
+ {% endfor %}
+ {% else %}
+ <p>No one is following you </p>
+ {% endif %}
+
+    </body>
+</html>

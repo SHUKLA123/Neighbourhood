@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% load crispy_forms_tags %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="form-row">
+  <div class="form-group col-md-8 mb-0">
+    {{ form.title|as_crispy_field }}
+  </div>
+  <div class="form-group col-md-4 mb-0">
+    {{ file_form.file|as_crispy_field }}
+  </div>
+  <div class="form-group col-md-5 mb-10">
+    {{ form.description|as_crispy_field }}
+  </div>
+</div>
+    <button type="submit">Upload</button>
+  </form>
+<br><br>
+  <p><a style = "color : red;" href="{% url 'home' %}">Return to home</a></p>
+
+
+{% endblock %}

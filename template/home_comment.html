@@ -1,0 +1,204 @@
+{% extends 'base.html'%}
+{% block extra_head %}
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.1.0/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+
+<script
+  src="http://code.jquery.com/jquery-3.4.1.js"
+  integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU="
+  crossorigin="anonymous"></script>
+<script type="text/javascript"
+  src = "https://cdnjs.cloudflare.com/ajax/libs/nanoajax/0.4.3/nanoajax.min.js">
+</script>
+<link href="//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css" rel="stylesheet">
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function(event){
+    $('.reply-btn').click(function(){
+      $(this).parent().parent().next('.replied-comments').fadeToggle()
+    });
+  })
+</script>
+{% endblock %}
+{% block content%}
+
+{% if request.user.address.pincode == pincode %}
+
+
+    <div class="col-md-7">
+      <form method="post" class="comment">
+        {% csrf_token %}
+        <textarea name="name" rows="2" cols="106" style = "margin:10px;" class="problem"></textarea>
+        <input type="submit" name="" value="Submit">
+      </form>
+    </div>
+    <div class="a">
+
+
+  {% comment %}  {{comment.count}} comment{{comment.count|pluralize}} {% endcomment %}
+    {% for i in comment%}
+
+      <blockquote class = "blockquote{{i.id}}">
+        <p class = "content{{i.id}}"><small>{{i.content }}</small></p>
+        <footer class ="blockquote-footer"><small>by<cite class="username_comment{{i.id}}" title="Source Title">{{ i.user|capfirst}}</cite></small>
+          <button type="button" name="button" class="reply-btn btn btn-outline-dark btn-sm">Reply</button>
+        </footer>
+      </blockquote>
+
+                        <div class="replied-comments{{i.id}} container mt-6 ml-5">
+                          {% for reply in i.replies.all %}
+                          <blockquote class = "blockquote">
+                            <p class = "mb-0"><small>{{reply.content }}</small></p>
+                            <footer class ="blockquote-footer"><small>by<cite title="Source Title">{{ reply.user|capfirst}}</cite></small>
+                            </footer>
+                          </blockquote>
+                          {% endfor %}
+                          <div class="form-group row">
+                            <form method="post"  class = "replied-form" data-id="{{i.id}}">
+                              {% csrf_token %}
+                              <input type="hidden" name="i_id">
+                              <textarea name="name" class="reply{{i.id}}" rows="4" cols="80"></textarea>
+                              <input type="submit" name="" class = "btn-outline-success" value="Submit">
+                            </form>
+
+                          </div>
+
+                        </div>
+
+
+                      {% endfor %}
+  </div>
+      {% else %}
+      <p>I am not happy</p>
+      {% endif%}
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+      <script src="http://cdn.jsdelivr.net/jquery.cookie/1.4.1/jquery.cookie.min.js"></script>
+      <script type="text/javascript">
+        var csrftoken = $.cookie('csrftoken');
+    		function csrfSafeMethod(method) {
+    			// these HTTP methods do not require CSRF protection
+    			return(/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+    		}
+    		$.ajaxSetup({
+    			beforeSend: function(xhr, settings) {
+    				if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+    					xhr.setRequestHeader("X-CSRFToken", csrftoken);
+    				}
+    			}
+    		});
+
+        $("form.comment").submit(function(e){
+          e.preventDefault();
+          $.post('{% url 'problem' %}',
+          {
+
+            comment: $('.problem').val(),
+
+          },
+
+          function(data){
+            user_data = data.user_m
+            if (data['status']='ok'){
+              $(".a").append(`
+              <blockquote class = "blockquote"+${user_data.id}>
+              <p class = "content"+${user_data.id}><small>${user_data.content}</small></p>
+              <footer class ="blockquote-footer"><small>by<cite class="username_comment"+${user_data.id} title="Source Title">${user_data.user_dn}</cite></small>
+              <button type="button" name="button" class="reply-btn btn btn-outline-dark btn-sm">Reply</button>
+              </blockquote>
+
+
+                <form method="post"  class = "replied-form" data-id="${user_data.id}">
+                  {% csrf_token %}
+                  <input type="hidden" name="i_id" data-id="${user_data.id}">
+                  <textarea name="name" class="preply${user_data.id}" rows="4" cols="80"></textarea>
+                  <input type="submit" name="" class = "btn-outline-success" value="Submit">
+                </form>
+
+              `)}
+
+
+              $('form.replied-form').submit(function(e){
+               e.preventDefault();
+               var add = $(this).data('id');
+               var reply = $('textarea.preply'+add).val();
+               $.post('{% url "problem-reply" %}',
+                   {
+
+                       problem_id:$(this).data('id'),
+                       reply:reply
+
+                   },
+
+                   function problemreply(data){
+                       user_data = data.user_p_r
+                       console.log(user_data);
+                       problem_id= user_data.reply_use_id;
+                       if (user_data)
+                       {      console.log("Working");
+                               $("div.replied-comments"+problem_id).append(`
+
+                              <blockquote class = "blockquote">
+                               <p class = "mb-0"><small>${user_data.content}</small></p>
+                               <footer class ="blockquote-footer"><small>by<cite title="Source Title">${user_data.user_dn}</cite></small>
+                              </footer>
+                               </blockquote>
+
+                                 `);
+                                 console.log("bdhb");
+
+                         }
+
+               });
+               $('form.replied-form').trigger("reset");
+               return false;
+               console.log("empty");
+            });
+
+          });
+          $('form.comment').trigger("reset");
+          return false;
+        });
+
+
+
+
+
+$('form.replied-form').submit(function(e){
+         e.preventDefault();
+         var add = $(this).data('id');
+
+
+         $.post('{% url "problem-reply" %}',
+             {
+
+                 problem_id:$(this).data('id'),
+                 reply: $('.reply'+add).val()
+
+             },
+
+             function problemreply(data){
+                 user_data = data.user_p_r
+                 if (user_data)
+                 {
+                         $(".replied-comments"+add).append(`
+
+                        <blockquote class = "blockquote">
+                         <p class = "mb-0"><small>${user_data.content}</small></p>
+                         <footer class ="blockquote-footer"><small>by<cite title="Source Title">${user_data.user_dn}</cite></small>
+                        </footer>
+                         </blockquote>
+
+                           `);
+                           console.log("bdhb");
+
+                   }
+
+         });
+         $('form.replied-form').trigger("reset");
+         return false;
+      });
+
+
+      </script>
+{% endblock %}

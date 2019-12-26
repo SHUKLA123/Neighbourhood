@@ -1,0 +1,59 @@
+{% extends "account/base.html" %}
+{% block extra_head%}
+<style media="screen">
+  .a{
+    background : red;
+  }
+  .card{
+      box-shadow: 6px 5px 5px 5px;
+  }
+</style>
+{% endblock %}
+{% block content %}
+{% if e %}
+{% for i in e%}
+<img src="{i.photo.url}" alt="">
+<p>{{i.user}}</p>
+<p>{{i.bussiness_name}}</p>
+<p>{{i.phone}}</p>
+<p>{{i.description}}</p>
+<p>{{i.street}}</p>
+<p>{{i.district}}</p>
+<p>{{i.website}}</p>
+{% endfor %}
+{% else %}
+{% if q%}
+{% for i,j in q.items %}
+<br><br>
+<center>
+<div class="card" style="width: 4x0rem;">
+  <div class="card-body">
+  <center><img src="{{i.photo.url}}" alt="" style="height:100px; width :100px"></center>
+<br>
+<p><u>{{i.bussiness_name}}</u></p>
+<p>{{i.description}}</p>
+<p>{{i.phone}}</p>
+<p>{{i.street}}</p>
+<p>{{i.district}}</p>
+<p>No. of customer : {{j}}</p>
+{% if customer%}
+<p>No. of followers : {{customer}}</p>
+{% else %}
+<p>No follower it affect your profile !!!!</p>
+{% endif %}
+<hr>
+{% if c1 %}
+{% for i in c1 %}
+<p>{{i.user}} <span style="color : red">{{i.description}}</span></p>
+<p></p>
+{% endfor %}
+{% else %}
+<p>efn</p>
+{% endif %}
+  </div>
+</div></center>
+{% endfor %}
+<br>
+{% endif %}
+{% endif %}
+{% endblock %}

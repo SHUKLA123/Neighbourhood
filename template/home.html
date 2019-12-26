@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block nav_content%}
+<li class="nav-item">
+
+  <a class="nav-link" href="/news/{{pincode}}"> News</a>
+</li>
+
+{% endblock %}
+{% block extra_head%}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+{% endblock%}
+{% block content %}<!---->
+  {% load crispy_forms_tags %}
+
+<!-- 1 .> user Informantions -->
+
+
+  <h1>{{user}}</h1>
+  <img class="rounded-circle account-img" src="{{user.Profile.image.url}}" alt="enken">
+  <h1>{{user.Profile.district}}</h1>
+  <h1>{{user.Profile.state}}</h1>
+  <h1>age : {{age}}</h1>
+  <h1>dob : {{dob}}</h1>
+  <h1>Following : {{len1}}</h1>
+  <h1>{{real_add}}</h1>
+
+  {% if messages %}
+   <ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+
+
+    {% endfor %}
+   </ul>
+  {% endif %}
+
+<!-- Update address -->
+<a href="{% url 'address_update' %}" class="btn btn-primary btn-lg">Update Address</a>
+
+<!-- 2 .> User Updations Form which is insertted in models of boostrap4  -->
+
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal" data-whatever="@fat">Update Profile</button>
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+           <span aria-hidden="true">&times;</span>
+          </button>
+          <form class="signup" enctype="multipart/form-data" id="signup_form" method="post">
+            <br>
+            <center><h1>Update Your Profile</h1></center>
+            {% csrf_token %}
+            {{u_form|crispy}}
+            {{p_form.image|as_crispy_field}}
+            <button class = "btn btn-primary" type="submit">Update &raquo;</button>
+          </form>
+       </div>
+      </div>
+    </div>
+  </div>
+
+
+  <br>
+  <br>
+  <br>
+  <!-- 3.> Notifications and Post -->
+  {% if l%}
+    {%for i in l %}
+    <h2>{{i.user}}</h2>
+    <p>{{i.title}}</p>
+    {% load cust_filters %}
+    {% with images=i.id|image_s %}
+    {% if images %}
+    {% for image in images %}
+    <img src="{{image.file.url}}" style = "height : 100px;" alt="Not found">
+    {% endfor %}
+    {% else %}
+    <p>Image Not found</p>
+    {% endif %}
+    {% endwith %}
+    <p>{{i.description}}</p>
+    <p>{{i.created}}</p>
+    <div class="image-likes">
+        {% for user in i.users_like.all %}
+          <div>
+            <a href="/user/{{ user.username }}" style="color : red;"><p>{{ user.username }}</p></a>
+          </div>
+        {% empty %}
+          <p style="color : red"> Nobody likes this post yet. </p>
+        {% endfor %}
+    </div>
+    {% endfor %}
+  {% endif %}
+
+  <h2>Notification</h2>
+  {% if actions%}
+    <div id="action-list">
+  		{% for action in actions %}
+  		  {% include "actions/action/detail.html" %}
+  		{% endfor %}
+    </div>
+  {% endif %}
+{%endblock%}

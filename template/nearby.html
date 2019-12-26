@@ -1,0 +1,132 @@
+{% extends "base.html"%}
+{% block extra_head%}
+<style media="screen">
+  body {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.flip-card {
+  background-color: transparent;
+  width: 300px;
+  height: 350px;
+  perspective: 1000px;
+}
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  transition: transform 0.6s;
+  transform-style: preserve-3d;
+  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+}
+
+.flip-card:hover .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-card-front, .flip-card-back {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+}
+
+.flip-card-front {
+  background-color: #bbb;
+  color: black;
+}
+
+.flip-card-back {
+  background-color: #2980b9;
+  color: white;
+  transform: rotateY(180deg);
+}
+</style>
+{% endblock %}
+{% block content%}
+<br><br>
+<div class="col-lg-8">
+  <div class="customDiv">
+    <form class="" action="/nearby/" method="post">
+      {% csrf_token %}
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <button class="btn btn-outline-secondary" type="button">Search</button>
+          </div>
+        <input type="text" name = "srh" class="form-control" placeholder="enter the username or address" aria-label="Not Found" aria-describedby="basic-addon1">
+        </div>
+    </form>
+
+  <br><br><br><br>
+<!-- Showing Result -->
+  <div class = "row">
+   {% if messages %}
+   <ul class="messages">
+     {% for k in messages %}
+       <li style="color : 'red'">{{k}}</li>
+     {% endfor %}
+   </ul>
+   {%endif%}
+  </div>
+  <br>
+
+  {% if f %}
+    {% for k,l in f.items%}
+    <h1>Near by u</h1>
+  <a href="/user/{{k.user.id}}">
+  <div class="flip-card">
+    <div class="flip-card-inner">
+
+      <div class="flip-card-front">
+        <img src="{{k.photo.url}}" alt="Avatar" style="width:300px;height:350px;">
+      </div>
+      <div class="flip-card-back">
+        <h2>{{k.user}}</h2>
+        <p>{{k.bussiness_name}}</p>
+        <p>{{k.description}}</p>
+        <p>{{k.street}}</p>
+        <p>{{k.district}}</p>
+        <p>{{k.phone}}</p>
+        <p>{{k.website}}</p>
+        <button type="" name="button">request</button>
+      </div>
+    </div>
+  </div></a>
+  <br>
+  <br>
+  {% endfor %}
+  {% else %}
+  <p>mdklmdk</p>
+  {% endif %}
+
+  {% if m %}
+  <h1>Outside you pincode</h1>
+    {% for i,j in m.items%}
+  <a href="/user/{{i.user.id}}">
+  <div class="flip-card">
+    <div class="flip-card-inner">
+
+      <div class="flip-card-front">
+        <img src="{{i.photo.url}}" alt="Avatar" style="width:300px;height:350px;">
+      </div>
+      <div class="flip-card-back">
+        <h2>{{i.user}}</h2>
+        <p>{{i.bussiness_name}}</p>
+        <p>{{i.description}}</p>
+        <p>{{i.street}}</p>
+        <p>{{i.district}}</p>
+        <p>{{i.phone}}</p>
+        <p>{{i.website}}</p>
+        <button type="" name="button">request</button>
+      </div>
+    </div>
+  </div></a>
+  <br>
+  <br>
+  {% endfor %}
+ {% endif %}
+ </div>
+</div>
+{% endblock %}
