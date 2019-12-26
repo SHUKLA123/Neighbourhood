@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+  </head>
+  <body>
+  <form method="post" enctype="multipart/form-data">
+    {{form.as_p}}
+    {%csrf_token%}
+    <button type="submit">Upload Image</button>
+  </form>
+    <h1>Images</h1>
+    {%for i in photo1%}
+    {% if i.image %}}
+    <img src="{{i.image.url}}" alt="">
+    <a href="/update/{{i.id}}">Update</a>
+    {%endif%}
+    {%endfor%}
+  </body>
+</html>
